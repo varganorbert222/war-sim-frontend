@@ -37,6 +37,29 @@ yarn-error.log
 testem.log
 /typings
 
-# System files
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
 .DS_Store
 Thumbs.db
+
+# Build artifacts
+*.js.map
+*.css.map
+
+# IDEs - additional
+*.swp
+*.swo
+*~
+.vscode/
+
+# Dependencies lock files (optional - uncomment if using lock files)
+# package-lock.json
+# yarn.lock
+
+# IDE cache
+.eslintcache
+
