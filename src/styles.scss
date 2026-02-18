@@ -1,1 +1,29 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Material theme – include locally rather than via angular.json to avoid
+   resolution issues during build. */
+@import "@angular/material/prebuilt-themes/pink-bluegrey.css";
+
+/* Leaflet stylesheet is included automatically via angular.json so the CLI
+   can resolve it without relying on the sass loader’s tilde syntax. */
+
+/* make sure body/html take the full viewport so 100vh works correctly */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #121212;
+  color: #eee;
+}
+
+/* snackbar colours */
+.snackbar-success {
+  background-color: #4caf50 !important;
+  color: #fff;
+}
+
+.snackbar-error {
+  background-color: #f44336 !important;
+  color: #fff;
+}

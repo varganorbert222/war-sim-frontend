@@ -1,0 +1,21 @@
+{
+  "TITLE": "War Sim",
+  "HOME": "Home",
+  "UNITS": "Units",
+  "SETTINGS": "Settings",
+  "LAT": "Lat",
+  "LON": "Lon",
+  "ZOOM": "Zoom",
+  "UNITS_LABEL": "Units",
+  "PLACE": "Place",
+  "TIME_ZONE": "Time zone",
+  "CURRENT_TIME": "Current time",
+  "UNITS_LOADED": "Units loaded from server",
+  "CACHED_UNITS": "Using cached units (offline)",
+  "FAILED_UNITS": "Failed to load units",
+  "OFFLINE": "You are offline",
+  "BACK_ONLINE": "Back online",
+  "OFFLINE_NO_CACHE": "Offline – no cached unit data",
+  "OFFLINE_FAILED": "Offline – failed to load units",
+  "ERROR_LOADING": "Error loading units"
+}

@@ -1,0 +1,21 @@
+{
+  "TITLE": "Harc Szimuláció",
+  "HOME": "Kezdőlap",
+  "UNITS": "Egységek",
+  "SETTINGS": "Beállítások",
+  "LAT": "Szélesség",
+  "LON": "Hosszúság",
+  "ZOOM": "Nagyítás",
+  "UNITS_LABEL": "Egységek",
+  "PLACE": "Hely",
+  "TIME_ZONE": "Időzóna",
+  "CURRENT_TIME": "Aktuális idő",
+  "UNITS_LOADED": "Egységek betöltve a szerverről",
+  "CACHED_UNITS": "Gyorsítótárból használva (offline)",
+  "FAILED_UNITS": "Egységek betöltése sikertelen",
+  "OFFLINE": "Offline vagy",
+  "BACK_ONLINE": "Vissza online",
+  "OFFLINE_NO_CACHE": "Offline – nincs gyorsítótárazott adat",
+  "OFFLINE_FAILED": "Offline – az egységek betöltése sikertelen",
+  "ERROR_LOADING": "Hiba az egységek betöltésekor"
+}

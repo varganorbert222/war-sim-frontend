@@ -1,1 +1,41 @@
-﻿<router-outlet />
+﻿<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" opened>
+    <mat-nav-list>
+      <a mat-list-item href="#">{{ "HOME" | translate }}</a>
+      <a mat-list-item href="#">{{ "UNITS" | translate }}</a>
+      <a mat-list-item href="#">{{ "SETTINGS" | translate }}</a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>{{ "TITLE" | translate }}</span>
+    </mat-toolbar>
+
+    <div class="map-wrapper">
+      <app-map
+        (viewChanged)="onViewChanged($event)"
+        (statsChanged)="onStatsChanged($event)"
+      ></app-map>
+    </div>
+
+    <mat-toolbar color="accent" class="footer">
+      <span>{{ "LAT" | translate }}: {{ lastLat.toFixed(4) }} </span>
+      <mat-divider vertical></mat-divider>
+      <span>{{ "LON" | translate }}: {{ lastLng.toFixed(4) }} </span>
+      <mat-divider vertical></mat-divider>
+      <span>{{ "ZOOM" | translate }}: {{ zoom }}</span>
+      <mat-divider vertical></mat-divider>
+      <span>{{ "UNITS_LABEL" | translate }}: {{ unitCount }}</span>
+      <mat-divider vertical></mat-divider>
+      <span>{{ "PLACE" | translate }}: {{ place }}</span>
+      <mat-divider vertical></mat-divider>
+      <span>{{ "TIME_ZONE" | translate }}: {{ timezone }}</span>
+      <mat-divider vertical></mat-divider>
+      <span>{{ currentTime }}</span>
+    </mat-toolbar>
+  </mat-sidenav-content>
+</mat-sidenav-container>
