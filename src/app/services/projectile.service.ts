@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { Unit } from '../models/unit';
+import { Projectile } from '../models/projectile';
 import { NotificationService } from './notification.service';
 
-const CACHE_KEY = 'units-cache';
+const CACHE_KEY = 'projectiles-cache';
 
 @Injectable({ providedIn: 'root' })
-export class UnitService {
+export class ProjectileService {
   private baseUrl = '/api';
 
   constructor(
@@ -16,21 +16,19 @@ export class UnitService {
     private notify: NotificationService,
   ) {}
 
-  getUnits(): Observable<Unit[]> {
-    return this.http.get<Unit[]>(`${this.baseUrl}/units`).pipe(
-      tap((units) => {
-        // cache successful result
-        localStorage.setItem(CACHE_KEY, JSON.stringify(units));
-        this.notify.success('UNITS_LOADED');
+  getProjectiles(): Observable<Projectile[]> {
+    return this.http.get<Projectile[]>(`${this.baseUrl}/projectiles`).pipe(
+      tap((list) => {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(list));
+        this.notify.success('PROJECTILES_LOADED');
       }),
       catchError((err) => {
-        // try to recover from cache
         const cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
-          this.notify.info('CACHED_UNITS');
+          this.notify.info('CACHED_PROJECTILES');
           return of(JSON.parse(cached));
         }
-        this.notify.error('FAILED_UNITS');
+        this.notify.error('FAILED_PROJECTILES');
         return throwError(() => err);
       }),
     );

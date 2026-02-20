@@ -17,5 +17,16 @@
   "BACK_ONLINE": "Vissza online",
   "OFFLINE_NO_CACHE": "Offline – nincs gyorsítótárazott adat",
   "OFFLINE_FAILED": "Offline – az egységek betöltése sikertelen",
-  "ERROR_LOADING": "Hiba az egységek betöltésekor"
+  "ERROR_LOADING": "Hiba az egységek betöltésekor",
+  "FACTIONS": "Frakciók",
+  "FACTIONS_LOADED": "Frakciólista betöltve",
+  "CACHED_FACTIONS": "Gyorsítótárazott frakcióadatok használata",
+  "FAILED_FACTIONS": "Frakciók betöltése sikertelen",
+  "PROJECTILES_LOADED": "Lövedéklista betöltve",
+  "CACHED_PROJECTILES": "Gyorsítótárazott lövedékek használata",
+  "FAILED_PROJECTILES": "Lövedékek betöltése sikertelen",
+  "PROJECTILES_LABEL": "Lövedékek",
+  "BULLET": "Golyó",
+  "SHELL": "Gránát",
+  "MISSILE": "Raketa"
 }

@@ -17,5 +17,16 @@
   "BACK_ONLINE": "Back online",
   "OFFLINE_NO_CACHE": "Offline – no cached unit data",
   "OFFLINE_FAILED": "Offline – failed to load units",
-  "ERROR_LOADING": "Error loading units"
+  "ERROR_LOADING": "Error loading units",
+  "FACTIONS": "Factions",
+  "FACTIONS_LOADED": "Faction list loaded",
+  "CACHED_FACTIONS": "Using cached faction data",
+  "FAILED_FACTIONS": "Failed to load factions",
+  "PROJECTILES_LOADED": "Projectile list loaded",
+  "CACHED_PROJECTILES": "Using cached projectiles",
+  "FAILED_PROJECTILES": "Failed to load projectiles",
+  "PROJECTILES_LABEL": "Projectiles",
+  "BULLET": "Bullet",
+  "SHELL": "Shell",
+  "MISSILE": "Missile"
 }

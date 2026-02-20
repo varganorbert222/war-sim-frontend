@@ -28,3 +28,81 @@
   font-size: 1.2rem;
   pointer-events: none;
 }
+
+/* simple div‑based icons for units and projectiles */
+.unit-icon {
+  width: 24px;
+  height: 24px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background-color: #555;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  line-height: 24px;
+}
+
+/* main category based coloring */
+.unit-icon.cat-airplane {
+  background-color: #4aa;
+}
+.unit-icon.cat-helicopter {
+  background-color: #6aa;
+}
+.unit-icon.cat-ground-unit {
+  background-color: #8a4;
+}
+.unit-icon.cat-ship {
+  background-color: #48a;
+}
+.unit-icon.cat-structure {
+  background-color: #666;
+}
+
+/* subcategory tweaks */
+.unit-icon.sub-fighter,
+.unit-icon.sub-interceptor {
+  background-color: #0a0;
+}
+.unit-icon.sub-main-battle-tank {
+  border-style: dashed;
+}
+.unit-icon.sub-destroyer,
+.unit-icon.sub-frigate {
+  background-color: #006;
+}
+.unit-icon.sub-logistics,
+.unit-icon.sub-civilian-vehicles,
+.unit-icon.sub-civilian-building {
+  background-color: #a00;
+}
+.unit-icon.sub-bomber {
+  font-size: 10px;
+}
+/* more rules may be added as backend subcategories expand */
+
+.projectile-icon {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: orange;
+}
+.projectile-icon.bullet {
+  background: yellow;
+}
+.projectile-icon.shell {
+  background: brown;
+}
+.projectile-icon.missile {
+  background: red;
+}
+
+/* ensure unit icon content is centered and respects rotation */
+.unit-icon div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
