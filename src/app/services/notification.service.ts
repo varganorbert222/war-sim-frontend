@@ -13,7 +13,7 @@ export class NotificationService {
     this.translate.get(key).subscribe((msg) => {
       this.snackBar.open(msg, 'OK', {
         duration: 3000,
-        panelClass: ['snackbar-success'],
+        panelClass: ['app-snackbar--success'],
       });
     });
   }
@@ -22,7 +22,7 @@ export class NotificationService {
     this.translate.get(key).subscribe((msg) => {
       this.snackBar.open(msg, 'Dismiss', {
         duration: 5000,
-        panelClass: ['snackbar-error'],
+        panelClass: ['app-snackbar--error'],
       });
     });
   }

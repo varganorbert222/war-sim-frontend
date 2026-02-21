@@ -11,6 +11,7 @@ import {
   TranslateHttpLoader,
 } from '@ngx-translate/http-loader';
 import { DEFAULT_MAP_CONFIG, MAP_CONFIG } from './config/map.config';
+import { API_CONFIG, DEFAULT_API_CONFIG } from './config/api.config';
 
 import { routes } from './app.routes';
 
@@ -27,6 +28,7 @@ export const appConfig: ApplicationConfig = {
       prefix: './i18n/',
       suffix: '.json',
     }),
+    { provide: API_CONFIG, useValue: DEFAULT_API_CONFIG },
     { provide: MAP_CONFIG, useValue: DEFAULT_MAP_CONFIG },
   ],
 };

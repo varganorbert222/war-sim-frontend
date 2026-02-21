@@ -1,5 +1,52 @@
-.sidenav-container {
+.app-shell {
   height: 100vh;
+
+  &__map-wrapper {
+    flex: 1 1 auto;
+    position: relative;
+  }
+
+  &__footer {
+    font-size: 0.85rem;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__faction-color {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+    border: 1px solid #ccc;
+    vertical-align: middle;
+  }
+
+  &__projectile-legend {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  &__projectile-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: orange;
+
+    &--bullet {
+      background: yellow;
+    }
+
+    &--shell {
+      background: brown;
+    }
+
+    &--missile {
+      background: red;
+    }
+  }
 }
 
 mat-sidenav {
@@ -15,36 +62,4 @@ mat-toolbar {
 mat-sidenav-content {
   display: flex;
   flex-direction: column;
-}
-
-.map-wrapper {
-  /* use flex grow so footer sticks to bottom */
-  flex: 1 1 auto;
-  position: relative;
-}
-
-.footer {
-  font-size: 0.85rem;
-  justify-content: center;
-  align-items: center;
-}
-
-/* small square showing faction colour in the legend */
-.faction-color {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin-right: 8px;
-  border: 1px solid #ccc;
-  vertical-align: middle;
-}
-
-.projectile-legend span.projectile-icon {
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 4px;
-}
-.projectile-legend {
-  font-size: 0.85rem;
-  line-height: 1.4;
 }

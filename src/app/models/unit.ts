@@ -11,12 +11,6 @@ export interface Unit {
 
   // additional fields returned by the backend
   factionId?: number;
-
-  // new backend taxonomy
-  mainCategory?: UnitMainCategory;
-  subCategory?: UnitSubCategory;
-
-  // legacy backend fields (temporary backward compatibility)
-  category?: string;
-  type?: string;
+  category?: UnitMainCategory;
+  subcategory?: UnitSubCategory;
 }

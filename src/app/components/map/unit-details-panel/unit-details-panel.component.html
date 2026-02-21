@@ -1,0 +1,68 @@
+<div
+  *ngIf="visible"
+  #detailsPanel
+  class="unit-details-panel"
+  [ngStyle]="panelStyle"
+>
+  <div class="unit-details-panel__header" (mousedown)="startPanelDrag($event)">
+    <span class="unit-details-panel__title">{{ details?.name || "Unit" }}</span>
+    <button
+      type="button"
+      class="unit-details-panel__close"
+      (mousedown)="$event.stopPropagation()"
+      (click)="onClose($event)"
+    >
+      ×
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="unit-details-panel__state">
+    {{ "UNIT_DETAILS_LOADING" | translate }}
+  </div>
+
+  <div
+    *ngIf="errorKey"
+    class="unit-details-panel__state unit-details-panel__state--error"
+  >
+    {{ errorKey | translate }}
+  </div>
+
+  <div *ngIf="details && !loading" class="unit-details-panel__content">
+    <div class="unit-details-panel__line">
+      {{ details.category }} / {{ details.subcategory }}
+    </div>
+    <div class="unit-details-panel__line">
+      {{ "DETAILS_STATUS" | translate }}: {{ details.status }}
+    </div>
+    <div class="unit-details-panel__line">
+      {{ "DETAILS_FACTION" | translate }}: {{ details.faction.name }}
+    </div>
+    <div class="unit-details-panel__line">
+      {{ "DETAILS_HEALTH" | translate }}:
+      {{ (details.health.percentage * 100).toFixed(0) }}%
+    </div>
+    <div class="unit-details-panel__line">
+      {{ "DETAILS_SPEED" | translate }}:
+      {{ details.velocity.speed.toFixed(1) }} m/s
+    </div>
+    <div class="unit-details-panel__line">
+      {{ "DETAILS_ALTITUDE" | translate }}: {{ details.position.altitude ?? 0 }}
+    </div>
+    <div class="unit-details-panel__line">
+      {{ "DETAILS_VISION" | translate }}:
+      {{ details.vision.rangeMeters.toFixed(0) }} m
+    </div>
+    <div class="unit-details-panel__line">
+      {{ "DETAILS_AMMO" | translate }}:
+      {{ (details.ammo.totalAmmoPercentage * 100).toFixed(0) }}% ({{
+        details.ammo.totalRoundsRemaining
+      }})
+    </div>
+    <div class="unit-details-panel__line" *ngIf="details.aiState">
+      {{ "DETAILS_AI_STATE" | translate }}: {{ details.aiState.currentState }}
+    </div>
+    <div class="unit-details-panel__line">
+      {{ "DETAILS_WEAPONS" | translate }}: {{ details.weapons.length }}
+    </div>
+  </div>
+</div>

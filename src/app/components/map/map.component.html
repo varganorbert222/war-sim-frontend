@@ -1,6 +1,12 @@
-<div class="map-container">
-  <div id="map"></div>
-  <div *ngIf="errorMessageKey" class="map-overlay">
-    {{ errorMessageKey | translate }}
-  </div>
+<div class="map">
+  <div id="map" class="map__canvas"></div>
+  <app-map-overlay [messageKey]="errorMessageKey"></app-map-overlay>
+
+  <app-unit-details-panel
+    [visible]="!!selectedUnitId"
+    [details]="selectedUnitDetails"
+    [loading]="detailsLoading"
+    [errorKey]="detailsErrorKey"
+    (closed)="clearUnitDetails()"
+  ></app-unit-details-panel>
 </div>

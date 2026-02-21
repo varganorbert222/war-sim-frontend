@@ -8,7 +8,6 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
 import * as L from 'leaflet';
 import 'leaflet.offline'; // plugin adds caching capabilities to L.tileLayer
 import { FactionService } from '../../services/faction.service';
@@ -22,11 +21,15 @@ import {
 import { takeUntil } from 'rxjs';
 import { BaseComponent } from '../base.component';
 import { MAP_CONFIG, MapConfig } from '../../config/map.config';
+import { UnitDetailsService } from '../../services/unit-details.service';
+import { DetailedUnit } from '../../models/detailed-unit';
+import { UnitDetailsPanelComponent } from './unit-details-panel/unit-details-panel.component';
+import { MapOverlayComponent } from './map-overlay/map-overlay.component';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, UnitDetailsPanelComponent, MapOverlayComponent],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss',
   encapsulation: ViewEncapsulation.None,
@@ -59,10 +62,17 @@ export class MapComponent
   private factions = new Map<number, Faction>();
 
   errorMessageKey: string | null = null;
+  selectedUnitDetails: DetailedUnit | null = null;
+  selectedUnitId: string | null = null;
+  detailsLoading = false;
+  detailsErrorKey: string | null = null;
+  private detailsRequestSequence = 0;
+  private suppressMapClickUntil = 0;
 
   constructor(
     private movementService: MovementService,
     private factionService: FactionService,
+    private unitDetailsService: UnitDetailsService,
   ) {
     super();
   }
@@ -160,6 +170,13 @@ export class MapComponent
     this.map.on(this.mapConfig.rendering.viewChangeEvents, () =>
       this.emitViewInfo(),
     );
+    this.map.on('click', () => {
+      if (Date.now() < this.suppressMapClickUntil) {
+        return;
+      }
+
+      this.clearUnitDetails();
+    });
   }
 
   private emitViewInfo() {
@@ -222,6 +239,15 @@ export class MapComponent
     });
 
     this.statsChanged.emit({ unitCount: snapshot.units.length });
+
+    if (this.selectedUnitId) {
+      if (this.unitMovements.has(this.selectedUnitId)) {
+        this.refreshSelectedUnitDetails(false);
+      } else {
+        this.clearUnitDetails();
+      }
+    }
+
     this.renderInterpolatedState(0);
   }
 
@@ -266,8 +292,15 @@ export class MapComponent
           icon: this.createUnitIcon(unit),
         }).addTo(this.map);
         marker.bindPopup(unit.name);
+        marker.on('click', (event: L.LeafletMouseEvent) => {
+          this.suppressMapClickUntil = Date.now() + 250;
+          event.originalEvent?.stopPropagation();
+          event.originalEvent?.preventDefault();
+          this.selectUnitMarker(unit.id);
+        });
         this.unitMarkers.set(unit.id, marker);
       } else {
+        existing.setIcon(this.createUnitIcon(unit));
         existing.setLatLng(position);
       }
     });
@@ -277,8 +310,35 @@ export class MapComponent
       if (!currentIds.has(id)) {
         this.map.removeLayer(marker);
         this.unitMarkers.delete(id);
+        if (this.selectedUnitId === id) {
+          this.clearUnitDetails();
+        }
       }
     });
+  }
+
+  clearUnitDetails(): void {
+    const hadSelection = !!this.selectedUnitId;
+    this.detailsRequestSequence += 1;
+    this.selectedUnitId = null;
+    this.selectedUnitDetails = null;
+    this.detailsLoading = false;
+    this.detailsErrorKey = null;
+    if (hadSelection) {
+      this.refreshUnitMarkerSelectionState();
+    }
+  }
+
+  private selectUnitMarker(unitId: string): void {
+    if (this.selectedUnitId === unitId) {
+      this.clearUnitDetails();
+      this.refreshUnitMarkerSelectionState();
+      return;
+    }
+
+    this.selectedUnitId = unitId;
+    this.refreshUnitMarkerSelectionState();
+    this.refreshSelectedUnitDetails(true);
   }
 
   private updateProjectileMarkers(elapsedSec: number): void {
@@ -317,19 +377,22 @@ export class MapComponent
   }
 
   private createUnitIcon(unit: UnitMovement): L.DivIcon {
-    const classes: string[] = ['unit-icon'];
+    const classes: string[] = ['map-unit'];
+    if (this.selectedUnitId === unit.id) {
+      classes.push('map-unit--selected');
+    }
     if (unit.status) {
-      classes.push(`status-${this.toCssClass(unit.status)}`);
+      classes.push(`map-unit--status-${this.toCssClass(unit.status)}`);
     }
 
-    const mainCategory = unit.mainCategory ?? unit.category;
+    const mainCategory = unit.category;
     if (mainCategory) {
-      classes.push(`cat-${this.toCssClass(mainCategory)}`);
+      classes.push(`map-unit--cat-${this.toCssClass(mainCategory)}`);
     }
 
-    const subCategory = unit.subCategory ?? unit.type;
+    const subCategory = unit.subcategory;
     if (subCategory) {
-      classes.push(`sub-${this.toCssClass(subCategory)}`);
+      classes.push(`map-unit--sub-${this.toCssClass(subCategory)}`);
     }
 
     let style = '';
@@ -341,19 +404,20 @@ export class MapComponent
       style = `border-color:${faction.color};`;
     }
 
-    // rotate according to unit heading
-    style += `transform: rotate(${unit.heading}deg);`;
-
     const label = unit.name
       ? unit.name.charAt(0).toUpperCase()
       : this.mapConfig.icons.unit.labelFallback;
 
     const unitIconSize = this.mapConfig.icons.unit.sizePx;
     const unitIconAnchor = unitIconSize / 2;
+    const vectorLength = unitIconSize * 0.6;
+    const center = unitIconSize / 2;
+    const vectorX = center + unit.directionX * vectorLength;
+    const vectorY = center - unit.directionY * vectorLength;
 
     return L.divIcon({
       className: classes.join(' '),
-      html: `<div style="${style}">${label}</div>`,
+      html: `<div class="map-unit__content" style="${style}"><div class="map-unit__label">${label}</div><svg class="map-unit__direction-vector" width="${unitIconSize}" height="${unitIconSize}" viewBox="0 0 ${unitIconSize} ${unitIconSize}" aria-hidden="true"><line x1="${center}" y1="${center}" x2="${vectorX}" y2="${vectorY}" /></svg></div>`,
       iconSize: [unitIconSize, unitIconSize],
       iconAnchor: [unitIconAnchor, unitIconAnchor],
     });
@@ -361,8 +425,8 @@ export class MapComponent
 
   private createProjectileIcon(projectile: ProjectileMovement): L.DivIcon {
     const classes: string[] = [
-      'projectile-icon',
-      this.toCssClass(projectile.type),
+      'map-projectile',
+      `map-projectile--${this.toCssClass(projectile.type)}`,
     ];
     return L.divIcon({
       className: classes.join(' '),
@@ -408,8 +472,59 @@ export class MapComponent
   private toCssClass(value: string): string {
     return value
       .trim()
+      .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+      .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
+  }
+
+  private refreshSelectedUnitDetails(showLoading: boolean): void {
+    if (!this.selectedUnitId) {
+      return;
+    }
+
+    const unitId = this.selectedUnitId;
+    const requestId = ++this.detailsRequestSequence;
+
+    if (showLoading) {
+      this.detailsLoading = true;
+    }
+    this.detailsErrorKey = null;
+
+    this.unitDetailsService
+      .getUnitDetails(unitId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (details) => {
+          if (
+            requestId !== this.detailsRequestSequence ||
+            this.selectedUnitId !== unitId
+          ) {
+            return;
+          }
+          this.selectedUnitDetails = details;
+          this.detailsLoading = false;
+        },
+        error: () => {
+          if (
+            requestId !== this.detailsRequestSequence ||
+            this.selectedUnitId !== unitId
+          ) {
+            return;
+          }
+          this.detailsLoading = false;
+          this.detailsErrorKey = 'UNIT_DETAILS_ERROR';
+        },
+      });
+  }
+
+  private refreshUnitMarkerSelectionState(): void {
+    this.unitMovements.forEach((unit) => {
+      const marker = this.unitMarkers.get(unit.id);
+      if (marker) {
+        marker.setIcon(this.createUnitIcon(unit));
+      }
+    });
   }
 }

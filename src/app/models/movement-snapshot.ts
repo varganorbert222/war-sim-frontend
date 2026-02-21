@@ -5,18 +5,18 @@ export interface UnitMovement {
   name: string;
   latitude: number;
   longitude: number;
+  altitude?: number;
   heading: number;
   speedMps: number;
   status: string;
   factionId: number;
-
-  // new backend taxonomy
-  mainCategory?: UnitMainCategory;
-  subCategory?: UnitSubCategory;
-
-  // legacy backend fields (temporary backward compatibility)
-  category?: string;
-  type?: string;
+  health: number;
+  visionRange: number;
+  directionX: number;
+  directionY: number;
+  ammoPercentage: number;
+  category: UnitMainCategory;
+  subcategory: UnitSubCategory;
 }
 
 export interface ProjectileMovement {

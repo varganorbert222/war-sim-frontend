@@ -28,5 +28,16 @@
   "PROJECTILES_LABEL": "Lövedékek",
   "BULLET": "Golyó",
   "SHELL": "Gránát",
-  "MISSILE": "Raketa"
+  "MISSILE": "Raketa",
+  "UNIT_DETAILS_LOADING": "Egység részletek betöltése...",
+  "UNIT_DETAILS_ERROR": "Az egység részleteinek betöltése sikertelen",
+  "DETAILS_STATUS": "Állapot",
+  "DETAILS_FACTION": "Frakció",
+  "DETAILS_HEALTH": "Életerő",
+  "DETAILS_SPEED": "Sebesség",
+  "DETAILS_ALTITUDE": "Magasság",
+  "DETAILS_VISION": "Látótáv",
+  "DETAILS_AMMO": "Lőszer",
+  "DETAILS_AI_STATE": "AI állapot",
+  "DETAILS_WEAPONS": "Fegyverek"
 }

@@ -1,0 +1,54 @@
+.unit-details-panel {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 320px;
+  min-width: 260px;
+  min-height: 180px;
+  max-width: min(560px, calc(100vw - 16px));
+  max-height: min(80vh, calc(100vh - 16px));
+  overflow: auto;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(20, 20, 20, 0.9);
+  color: #fff;
+  z-index: 500;
+  resize: both;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: move;
+    margin: -4px -4px 8px;
+    padding: 4px;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+    padding-right: 8px;
+  }
+
+  &__close {
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  &__line {
+    margin: 4px 0;
+    font-size: 13px;
+  }
+
+  &__state {
+    font-size: 13px;
+
+    &--error {
+      color: #ff8a80;
+    }
+  }
+}

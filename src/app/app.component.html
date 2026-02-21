@@ -1,4 +1,4 @@
-﻿<mat-sidenav-container class="sidenav-container">
+﻿<mat-sidenav-container class="app-shell">
   <mat-sidenav
     #sidenav
     mode="side"
@@ -13,18 +13,27 @@
       <h3 mat-subheader>{{ "FACTIONS" | translate }}</h3>
       <ng-container *ngFor="let f of factions">
         <mat-list-item>
-          <span class="faction-color" [style.background]="f.color"></span>
+          <span
+            class="app-shell__faction-color"
+            [style.background]="f.color"
+          ></span>
           {{ f.name }}
         </mat-list-item>
       </ng-container>
       <mat-divider></mat-divider>
       <h3 mat-subheader>{{ "PROJECTILES_LABEL" | translate }}</h3>
-      <div class="projectile-legend">
-        <span class="projectile-icon bullet"></span> {{ "BULLET" | translate
-        }}<br />
-        <span class="projectile-icon shell"></span> {{ "SHELL" | translate
-        }}<br />
-        <span class="projectile-icon missile"></span>
+      <div class="app-shell__projectile-legend">
+        <span
+          class="app-shell__projectile-icon app-shell__projectile-icon--bullet"
+        ></span>
+        {{ "BULLET" | translate }}<br />
+        <span
+          class="app-shell__projectile-icon app-shell__projectile-icon--shell"
+        ></span>
+        {{ "SHELL" | translate }}<br />
+        <span
+          class="app-shell__projectile-icon app-shell__projectile-icon--missile"
+        ></span>
         {{ "MISSILE" | translate }}
       </div>
     </mat-nav-list>
@@ -38,14 +47,14 @@
       <span>{{ "TITLE" | translate }}</span>
     </mat-toolbar>
 
-    <div class="map-wrapper">
+    <div class="app-shell__map-wrapper">
       <app-map
         (viewChanged)="onViewChanged($event)"
         (statsChanged)="onStatsChanged($event)"
       ></app-map>
     </div>
 
-    <mat-toolbar color="accent" class="footer">
+    <mat-toolbar color="accent" class="app-shell__footer">
       <span>{{ "LAT" | translate }}: {{ lastLat.toFixed(4) }} </span>
       <mat-divider vertical></mat-divider>
       <span>{{ "LON" | translate }}: {{ lastLng.toFixed(4) }} </span>

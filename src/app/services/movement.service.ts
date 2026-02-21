@@ -1,20 +1,24 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { MovementSnapshot } from '../models/movement-snapshot';
+import { API_CONFIG, ApiConfig, buildApiUrl } from '../config/api.config';
 
 const CACHE_KEY = 'movement-snapshot-cache';
 
 @Injectable({ providedIn: 'root' })
 export class MovementService {
-  private readonly baseUrl = '/api';
-
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    @Inject(API_CONFIG) private readonly apiConfig: ApiConfig,
+  ) {}
 
   getSnapshot(): Observable<MovementSnapshot> {
     return this.http
-      .get<MovementSnapshot>(`${this.baseUrl}/movement/snapshot`)
+      .get<MovementSnapshot>(
+        buildApiUrl(this.apiConfig.apiBaseUrl, 'movement/snapshot'),
+      )
       .pipe(
         tap((snapshot) => {
           localStorage.setItem(CACHE_KEY, JSON.stringify(snapshot));

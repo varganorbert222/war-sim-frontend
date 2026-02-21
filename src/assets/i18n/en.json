@@ -28,5 +28,16 @@
   "PROJECTILES_LABEL": "Projectiles",
   "BULLET": "Bullet",
   "SHELL": "Shell",
-  "MISSILE": "Missile"
+  "MISSILE": "Missile",
+  "UNIT_DETAILS_LOADING": "Loading unit details...",
+  "UNIT_DETAILS_ERROR": "Failed to load unit details",
+  "DETAILS_STATUS": "Status",
+  "DETAILS_FACTION": "Faction",
+  "DETAILS_HEALTH": "Health",
+  "DETAILS_SPEED": "Speed",
+  "DETAILS_ALTITUDE": "Altitude",
+  "DETAILS_VISION": "Vision",
+  "DETAILS_AMMO": "Ammo",
+  "DETAILS_AI_STATE": "AI state",
+  "DETAILS_WEAPONS": "Weapons"
 }
