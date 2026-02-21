@@ -5,6 +5,7 @@ import {
   Output,
   EventEmitter,
   ViewEncapsulation,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
@@ -20,6 +21,7 @@ import {
 } from '../../models/movement-snapshot';
 import { takeUntil } from 'rxjs';
 import { BaseComponent } from '../base.component';
+import { MAP_CONFIG, MapConfig } from '../../config/map.config';
 
 @Component({
   selector: 'app-map',
@@ -40,8 +42,8 @@ export class MapComponent
   }>();
   @Output() statsChanged = new EventEmitter<{ unitCount: number }>();
 
+  private readonly mapConfig: MapConfig = inject(MAP_CONFIG);
   private map!: L.Map;
-  private readonly pollIntervalMs = 2000;
   private pollTimerId: number | null = null;
   private animationFrameId: number | null = null;
   private lastSnapshotReceivedAt = Date.now();
@@ -84,7 +86,10 @@ export class MapComponent
     // Leaflet sometimes calculates an incorrect size if the container
     // was not visible when the map was created (common in Angular).
     // Force a resize pass after the view has settled.
-    setTimeout(() => this.map.invalidateSize(), 0);
+    setTimeout(
+      () => this.map.invalidateSize(),
+      this.mapConfig.rendering.mapInvalidateDelayMs,
+    );
   }
 
   override ngOnDestroy(): void {
@@ -108,38 +113,53 @@ export class MapComponent
 
   private initMap(): void {
     // initial map with some performance tweaks
-    const mapOptions: any = {
-      // allow zooming with the mouse wheel; leaving this enabled means
-      // the map will intercept scroll events, which is usually desirable
-      // when users actively interact with the map.  If you want to require
-      // a modifier key instead, use `scrollWheelZoom: 'ctrl'`.
-      scrollWheelZoom: true,
-      updateWhenIdle: true, // delay tile requests until user stops dragging
-      updateInterval: 200, // throttle requests while dragging
-      keepBuffer: 2, // keep an extra row/column of tiles to reduce reloads
+    const mapOptions: L.MapOptions = {
+      scrollWheelZoom: this.mapConfig.mapOptions.scrollWheelZoom,
     };
 
-    this.map = L.map('map', mapOptions).setView([47.4979, 19.0402], 10);
+    this.map = L.map(this.mapConfig.mapContainerId, mapOptions).setView(
+      [
+        this.mapConfig.initialView.latitude,
+        this.mapConfig.initialView.longitude,
+      ],
+      this.mapConfig.initialView.zoom,
+    );
 
     // use the offline-capable tile layer provided by the plugin
     const offlineLayer = (L.tileLayer as any).offline(
-      'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+      this.mapConfig.tileLayer.url,
       {
-        attribution:
-          'Map data: &copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap (CC-BY-SA)',
-        maxZoom: 17,
-        detectRetina: true,
-        useCache: true, // enable plugin cache
-        crossOrigin: true, // required for cache
-        cacheMaxAge: 24 * 3600 * 1000, // keep tiles for one day
+        attribution: this.mapConfig.tileLayer.attribution,
+        maxZoom: this.mapConfig.tileLayer.maxZoom,
+        detectRetina: this.mapConfig.tileLayer.detectRetina,
+        useCache: this.mapConfig.tileLayer.useCache,
+        crossOrigin: this.mapConfig.tileLayer.crossOrigin,
+        cacheMaxAge: this.mapConfig.tileLayer.cacheMaxAgeMs,
+        updateWhenIdle: this.mapConfig.tileLayer.updateWhenIdle,
+        updateInterval: this.mapConfig.tileLayer.updateInterval,
+        keepBuffer: this.mapConfig.tileLayer.keepBuffer,
       },
     );
 
     offlineLayer.addTo(this.map);
 
+    const initialBounds = L.latLngBounds(
+      [
+        this.mapConfig.initialBounds.minLatitude,
+        this.mapConfig.initialBounds.minLongitude,
+      ],
+      [
+        this.mapConfig.initialBounds.maxLatitude,
+        this.mapConfig.initialBounds.maxLongitude,
+      ],
+    );
+    this.map.fitBounds(initialBounds);
+
     // emit initial view state and subscribe to later changes
     this.emitViewInfo();
-    this.map.on('moveend zoomend', () => this.emitViewInfo());
+    this.map.on(this.mapConfig.rendering.viewChangeEvents, () =>
+      this.emitViewInfo(),
+    );
   }
 
   private emitViewInfo() {
@@ -172,9 +192,12 @@ export class MapComponent
         });
     };
 
-    // immediately fetch and then poll every 2 seconds
+    // immediately fetch and then start periodic polling
     fetchSnapshot();
-    this.pollTimerId = window.setInterval(fetchSnapshot, this.pollIntervalMs);
+    this.pollTimerId = window.setInterval(
+      fetchSnapshot,
+      this.mapConfig.polling.intervalMs,
+    );
   }
 
   private applySnapshot(snapshot: MovementSnapshot): void {
@@ -206,7 +229,8 @@ export class MapComponent
     const loop = () => {
       const elapsedSec = Math.min(
         (Date.now() - this.lastSnapshotReceivedAt) / 1000,
-        this.pollIntervalMs / 1000,
+        this.mapConfig.rendering.maxInterpolationSeconds ??
+          this.mapConfig.polling.intervalMs / 1000,
       );
 
       this.renderInterpolatedState(elapsedSec);
@@ -320,13 +344,18 @@ export class MapComponent
     // rotate according to unit heading
     style += `transform: rotate(${unit.heading}deg);`;
 
-    const label = unit.name ? unit.name.charAt(0).toUpperCase() : 'U';
+    const label = unit.name
+      ? unit.name.charAt(0).toUpperCase()
+      : this.mapConfig.icons.unit.labelFallback;
+
+    const unitIconSize = this.mapConfig.icons.unit.sizePx;
+    const unitIconAnchor = unitIconSize / 2;
 
     return L.divIcon({
       className: classes.join(' '),
       html: `<div style="${style}">${label}</div>`,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
+      iconSize: [unitIconSize, unitIconSize],
+      iconAnchor: [unitIconAnchor, unitIconAnchor],
     });
   }
 
@@ -338,8 +367,14 @@ export class MapComponent
     return L.divIcon({
       className: classes.join(' '),
       html: '<div></div>',
-      iconSize: [8, 8],
-      iconAnchor: [4, 4],
+      iconSize: [
+        this.mapConfig.icons.projectile.sizePx,
+        this.mapConfig.icons.projectile.sizePx,
+      ],
+      iconAnchor: [
+        this.mapConfig.icons.projectile.sizePx / 2,
+        this.mapConfig.icons.projectile.sizePx / 2,
+      ],
     });
   }
 
